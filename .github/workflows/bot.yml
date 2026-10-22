@@ -2,7 +2,7 @@ name: telegram-bot
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # раз в 10 минут (GitHub может запускать с задержкой)
+    - cron: "*/5 * * * *"
   workflow_dispatch:          # кнопка "Run workflow" для ручного запуска
 
 concurrency:
