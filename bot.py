@@ -235,18 +235,25 @@ def handle_message(msg):
 
 
 def main():
+    me = tg("getMe")
+    if me:
+        log(f"Подключён бот: @{me.get('username')}")
+
     offset = None
     for _ in range(10):
         params = {"timeout": 0, "limit": 100, "allowed_updates": ["message", "channel_post"]}
         if offset:
             params["offset"] = offset
         updates = tg("getUpdates", **params)
+        log(f"Получено обновлений: {len(updates or [])}")
         if not updates:
             break
         for update in updates:
             try:
                 if "message" in update:
-                    handle_message(update["message"])
+                    msg = update["message"]
+                    log(f"Сообщение из чата типа {msg['chat'].get('type')}")
+                    handle_message(msg)
                 elif "channel_post" in update:
                     post_chat = update["channel_post"]["chat"]
                     log(f"Сообщение в канале: chat_id={post_chat['id']}, название={post_chat.get('title', '')}")
