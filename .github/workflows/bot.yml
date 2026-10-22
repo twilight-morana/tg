@@ -1,0 +1,46 @@
+name: telegram-bot
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # раз в 10 минут (GitHub может запускать с задержкой)
+  workflow_dispatch:          # кнопка "Run workflow" для ручного запуска
+
+concurrency:
+  group: telegram-bot
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install requests
+
+      - name: Run bot
+        run: python bot.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OWNER_TELEGRAM_ID: ${{ secrets.OWNER_TELEGRAM_ID }}
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AI_PROVIDER: gemini        # gemini (бесплатно) или anthropic (Claude, платно)
+          LOG_GROUPS: "false"        # "true" включает журнал сообщений групп
+
+      - name: Save group log
+        run: |
+          if [ -d data ]; then
+            git config user.name "tgbot"
+            git config user.email "tgbot@users.noreply.github.com"
+            git add data
+            git diff --cached --quiet || (git commit -m "update group log" && git push)
+          fi
