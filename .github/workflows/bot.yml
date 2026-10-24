@@ -36,6 +36,7 @@ jobs:
           AI_PROVIDER: gemini        # gemini (бесплатно) или anthropic (Claude, платно)
           GEMINI_MODEL: gemini-3.1-flash-lite
           LOG_GROUPS: "false"        # "true" включает журнал сообщений групп
+          PUBLIC_CHAT_IDS: ${{ secrets.PUBLIC_CHAT_IDS }}
 
       - name: Save group log
         run: |
